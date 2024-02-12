@@ -1,20 +1,21 @@
 from itertools import combinations
+from typing import Union
 
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.ensemble._forest import (_generate_unsampled_indices,
                                       _get_n_samples_bootstrap)
 
 
 def rf_similarity(
     X: np.array,
-    clf: RandomForestClassifier
+    rf_model: Union[RandomForestClassifier, RandomForestRegressor]
     ) -> np.array:
     """random forest similarity using out of bag samples
 
     Args:
         X (np.array): training examples
-        clf (RandomForestClassifier): _description_
+        rf_model (Union[RandomForestClassifier, RandomForestRegressor]): a trained random forest model
 
     Returns:
         np.array: upper triangular matrix counting the frequency of same terminal node
@@ -22,9 +23,9 @@ def rf_similarity(
     n_samples = X.shape[0]
     sim_matrix = np.zeros(shape=(n_samples, n_samples))
 
-    n_samples_bootstrap = _get_n_samples_bootstrap(len(y), clf.max_samples)
+    n_samples_bootstrap = _get_n_samples_bootstrap(len(y), rf_model.max_samples)
 
-    for estimator in clf:
+    for estimator in rf_model:
         unsampled_indices = _generate_unsampled_indices(
             estimator.random_state,
             n_samples,
@@ -41,7 +42,7 @@ def rf_similarity(
 
 
 if __name__ == '__main__':
-    from sklearn.datasets import make_classification
+    from sklearn.datasets import make_classification, make_regression
     RANDOM_STATE = 123
 
     # Generate a binary classification dataset.
@@ -50,7 +51,7 @@ if __name__ == '__main__':
         n_features=25,
         n_clusters_per_class=1,
         n_informative=15,
-        random_state=RANDOM_STATE,
+        random_state=RANDOM_STATE
     )
 
     clf = RandomForestClassifier(
@@ -65,3 +66,15 @@ if __name__ == '__main__':
     clf.fit(X, y)
 
     out = rf_similarity(X, clf)
+
+
+    X, y = make_regression(
+        n_samples=500,
+        n_features=25,
+        random_state=RANDOM_STATE
+    )
+
+    regr = RandomForestRegressor(max_depth=2, random_state=0)
+    regr.fit(X, y)
+
+    out = rf_similarity(X, regr)
