@@ -1,0 +1,12 @@
+# ignore everything
+*
+
+!/**/
+# add whitelist
+!.gitignore
+!*.py
+!*.mds
+!*.png
+!requirements*.txt
+!*.sh
+venv/*
