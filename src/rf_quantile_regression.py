@@ -48,6 +48,52 @@ def weighted_quantile_rfgap(values, quantiles, sample_weight=None, values_sorted
     return quantile_values[0] if len(quantile_values) == 1 else np.array(quantile_values)
 
 
+def predit_bounds(x: np.array, y: np.array, coverage: float, **kwargs):
+    """Predict bounds using RFGAP
+
+    Args:
+        x (np.array): array-like, shape (n_samples, n_features)
+        y (np.array): array-like, shape (n_samples,)
+        coverage (float): coverage level for the prediction interval
+        **kwargs: additional arguments for RFGAP
+
+    Returns:
+        upper_bound (np.array): array-like, shape (n_samples,)
+        lower_bound (np.array): array-like, shape (n_samples,)
+        rf (RFGAP): fitted RFGAP model
+    """
+    if coverage <= 0 or coverage >= 1:
+        raise ValueError("coverage must be between 0 and 1")
+    rf = RFGAP(
+        prediction_type="regression",
+        **kwargs
+        )
+    rf.fit(x, y)
+
+    proximities = rf.get_proximities()
+
+    upper_bound = np.zeros(len(y))
+    lower_bound = np.zeros(len(y))
+
+    for idx in range(len(y)):
+        proximity = proximities[idx].toarray()[0]
+        upper = weighted_quantile_rfgap(
+            values=y,
+            quantiles=1 - (1 - coverage) / 2,
+            sample_weight=proximity,
+            values_sorted=False
+            )
+        lower = weighted_quantile_rfgap(
+            values=y,
+            quantiles=(1 - coverage) / 2,
+            sample_weight=proximity
+            )
+        upper_bound[idx] = upper
+        lower_bound[idx] = lower
+
+    return upper_bound, lower_bound, rf
+
+
 if __name__ == "__main__":
     import openml
     boston = openml.datasets.get_dataset(531)  # 531 is the dataset ID
