@@ -5,7 +5,7 @@
 # add whitelist
 !.gitignore
 !*.py
-!*.mds
+!*.md
 !*.png
 !requirements*.txt
 !*.sh
