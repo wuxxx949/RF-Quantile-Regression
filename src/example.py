@@ -39,11 +39,3 @@ if __name__ == "__main__":
         lower_bound[idx] = lower
 
     plot_centered_bounds(y, upper_bound, lower_bound)
-
-
-    cnt = 0
-    for idx in range(len(y)):
-        if y[idx] < lower_bound[idx] or y[idx] > upper_bound[idx]:
-            cnt += 1
-
-    print(f"pct of pts outside of bound: {cnt / len(y)}")

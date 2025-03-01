@@ -14,6 +14,11 @@ def plot_centered_bounds(y, upper_bound, lower_bound):
       lower_bound : array-like
           The lower bounds.
     """
+    cnt = 0
+    for idx in range(len(y)):
+        if y[idx] < lower_bound[idx] or y[idx] > upper_bound[idx]:
+            cnt += 1
+
     y_centered = y - (upper_bound + lower_bound) / 2
     upper_bound_centered = upper_bound - (upper_bound + lower_bound) / 2
     lower_bound_centered = lower_bound - (upper_bound + lower_bound) / 2
@@ -29,6 +34,8 @@ def plot_centered_bounds(y, upper_bound, lower_bound):
     plt.plot(range(len(y)), lower_bound, color='blue')
     plt.plot(range(len(y)), upper_bound, color='blue')
     plt.fill_between(range(len(y)), lower_bound, upper_bound, color='blue', alpha=0.1)
+    plt.text(0.01, 0.99, f"pct of pts outside of bound: {cnt / len(y):.2%}", transform=plt.gca().transAxes,
+             verticalalignment='top', horizontalalignment='left', fontsize=12)
     plt.xlabel("Ordered Samples")
     plt.ylabel("Centered Values and Prediction Intervals")
     plt.legend(loc='best')
