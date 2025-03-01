@@ -3,7 +3,8 @@ from rfgap import RFGAP
 import numpy as np
 import matplotlib.pyplot as plt
 
-def weighted_quantile_actual_point(values, quantiles, sample_weight=None, values_sorted=False):
+
+def weighted_quantile_rfgap(values, quantiles, sample_weight=None, values_sorted=False):
     """
     Compute weighted quantiles using actual data points (no interpolation).
 
@@ -25,6 +26,7 @@ def weighted_quantile_actual_point(values, quantiles, sample_weight=None, values
     if sample_weight is None:
         sample_weight = np.ones(len(values))
     sample_weight = np.array(sample_weight)
+    quantiles = np.atleast_1d(quantiles)
 
     if not values_sorted:
         sorter = np.argsort(values)
@@ -64,68 +66,11 @@ if __name__ == "__main__":
 
     proximities = rf.get_proximities()
 
-    # # Example usage:
-    # data = np.array([10, 20, 30, 40, 50])
-    # weights = np.array([1, 2, 3, 4, 5])
-
-    # # Compute the weighted median using an actual data point
-    # median_actual = weighted_quantile_actual_point(data, 0.5, sample_weight=weights)
-    # print("Weighted median (actual data point):", median_actual)
-
-    # # Compute an arbitrary quantile, say 0.3 quantile
-    # quantile_30_actual = weighted_quantile_actual_point(data, 0.3, sample_weight=weights)
-    # print("Weighted 0.3 quantile (actual data point):", quantile_30_actual)
-    y = y.to_numpy()
-    # sorter = np.argsort(y)
-    upper_bound = np.zeros(len(y))
-    lower_bound = np.zeros(len(y))
-    y_centered = np.zeros(len(y))
-
-    for idx in range(len(y)):
-        proximity = proximities[idx].toarray()[0]
-        upper = weighted_quantile_actual_point(
-            values=y,
-            quantiles=0.975,
-            sample_weight=proximity
-            )
-        lower = weighted_quantile_actual_point(
-            values=y,
-            quantiles=0.025,
-            sample_weight=proximity
-            )
-        mean_bound = (upper + lower) / 2
-        upper_bound[idx] = upper - mean_bound
-        lower_bound[idx] = lower - mean_bound
-        y_centered[idx] = y[idx] - mean_bound
-
-    # Sort by the length of the bounds
-    bound_len = upper_bound - lower_bound
-    sorter = np.argsort(bound_len)
-    y_centered = y_centered[sorter]
-
-    plt.figure(figsize=(8, 6))
-
-    # Scatter the observed values (orange points)
-    plt.scatter(range(len(y)), y_centered, color='orange', s=15)
-
-    # Plot the upper and lower bounds (blue lines)
-    plt.plot(range(len(y)), lower_bound[sorter], color='blue')
-    plt.plot(range(len(y)), upper_bound[sorter], color='blue')
-
-    # Fill between the bounds (light blue shading)
-    plt.fill_between(range(len(y)), lower_bound[sorter], upper_bound[sorter], color='blue', alpha=0.1)
-
-    # Label axes, title, etc.
-    plt.xlabel("Ordered Samples")
-    plt.ylabel("Observed Values and Prediction Intervals")
-    plt.legend(loc='best')
-    plt.grid(True, color='gray', alpha=0.1)
-    plt.show()
 
     median_prediction = np.zeros(len(y))
     for idx in range(len(y)):
         proximity = proximities[idx].toarray()[0]
-        median = weighted_quantile_actual_point(
+        median = weighted_quantile_rfgap(
             values=y,
             quantiles=0.5,
             sample_weight=proximity
@@ -140,38 +85,3 @@ if __name__ == "__main__":
 
     # add 45 degree line
     plt.plot([0, 50], [0, 50], color='blue')
-
-
-    cnt = 0
-    for idx in range(len(y)):
-        if y[idx] < lower_bound[idx] or y[idx] > upper_bound[idx]:
-            cnt += 1
-
-    print(cnt / len(y))
-
-
-    upper_bound = np.zeros(len(y))
-    lower_bound = np.zeros(len(y))
-    y_lst = y
-
-    for idx in range(len(y)):
-        proximity = proximities[idx].toarray()[0]
-        upper = weighted_quantile_actual_point(
-            values=y,
-            quantiles=0.975,
-            sample_weight=proximity
-            )
-        lower = weighted_quantile_actual_point(
-            values=y,
-            quantiles=0.025,
-            sample_weight=proximity
-            )
-        upper_bound[idx] = upper
-        lower_bound[idx] = lower
-
-    y_centered = np.zeros(len(y))
-    upper_bound_centered = np.zeros(len(y))
-    lower_bound_centered = np.zeros(len(y))
-
-
-    plot_centered_bounds(y, upper_bound, lower_bound)
