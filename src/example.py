@@ -7,7 +7,6 @@ from rf_quantile_regression import predit_bounds
 if __name__ == "__main__":
     import openml
     boston = openml.datasets.get_dataset(531)  # 531 is the dataset ID
-    prediction_type = 'regression'
 
     # Convert to a Pandas DataFrame
     X, y, _, _ = boston.get_data(target=boston.default_target_attribute)
