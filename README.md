@@ -1,4 +1,4 @@
-This repo implements methodology proposed in Quantile Regression using Random Forest Proximities by Li etc.
+This repo implements methodology proposed in Quantile Regression using Random Forest Proximities by Li et al.
 
 # Boston Housing Example
 Using Boston housing data as a toy example,
