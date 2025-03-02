@@ -40,6 +40,6 @@ plot_centered_bounds(y, upper_bound_lm, lower_bound_lm)
 ```
 ![LM Bounds](plots/lm_bounds.png)
 
-The average length of the bound is 12.75 and there are 5.73% (with 95% coverage as target) of the points not covered by the bounds.
+The average length of the bound is 18.47 and there are 5.73% (with 95% coverage as target) of the points not covered by the bounds.
 
 See `src/example.py` for the code.
