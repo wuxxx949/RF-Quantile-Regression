@@ -24,6 +24,7 @@ print(f'average length of the bounds rf: {np.mean(upper_bound - lower_bound)}')
 ```
 ![RF Bounds](plots/rf_bounds.png)
 The average length of the bound is 12.75 and there are 3.36% (with 95% coverage as target) of the points not covered by the bounds. Note that the hyperparameters is not tuned.
+![pred vs actual](plots/pred_vs_actual.png)
 
 To compare the results with the quantile regression of sk-learn
 ```python
