@@ -13,7 +13,7 @@ if __name__ == "__main__":
     X['RAD'] = X['RAD'].astype(int)
     X['CHAS'] = X['CHAS'].astype(int)
 
-    upper_bound, lower_bound, rf = predit_bounds(
+    upper_bound, lower_bound, _ = predit_bounds(
         X, y, coverage=0.95, n_estimators=500, max_depth=6
         )
 
@@ -27,4 +27,19 @@ if __name__ == "__main__":
     upper_bound_lm = qr.fit(X, y).predict(X)
     plot_centered_bounds(y, upper_bound_lm, lower_bound_lm)
     print(f'average length of the bounds lm: {np.mean(upper_bound_lm - lower_bound_lm)}')
+
+    # compare with other prox_method of original
+    upper_bound_orig, lower_bound_orig, _ = predit_bounds(
+        X, y, prox_method = 'original', coverage=0.95, n_estimators=500, max_depth=6
+        )
+    plot_centered_bounds(y, upper_bound_orig, lower_bound_orig)
+    print(f'average length of the bounds original prox: {np.mean(upper_bound_orig - lower_bound_orig)}')
+
+    # compare with other prox_method of oob
+    upper_bound_oob, lower_bound_oob, _ = predit_bounds(
+        X, y, prox_method = 'oob', coverage=0.95, n_estimators=500, max_depth=6
+        )
+
+    plot_centered_bounds(y, upper_bound_oob, lower_bound_oob)
+    print(f'average length of the bounds oob prox: {np.mean(upper_bound_oob - lower_bound_oob)}')
 
