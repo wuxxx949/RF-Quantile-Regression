@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def weighted_quantile_rfgap(values, quantiles, sample_weight=None, values_sorted=False):
     """
-    Compute weighted quantiles using actual data points (no interpolation).
+    Compute weighted quantiles
 
     Parameters:
       values : array-like
@@ -72,8 +72,9 @@ def predit_bounds(x: np.array, y: np.array, coverage: float, **kwargs):
 
     proximities = rf.get_proximities()
 
-    upper_bound = np.zeros(len(y))
-    lower_bound = np.zeros(len(y))
+    upper_bounds = np.zeros(len(y))
+    lower_bounds = np.zeros(len(y))
+    medians = np.zeros(len(y))
 
     for idx in range(len(y)):
         proximity = proximities[idx].toarray()[0]
@@ -88,10 +89,16 @@ def predit_bounds(x: np.array, y: np.array, coverage: float, **kwargs):
             quantiles=(1 - coverage) / 2,
             sample_weight=proximity
             )
-        upper_bound[idx] = upper
-        lower_bound[idx] = lower
+        median = weighted_quantile_rfgap(
+            values=y,
+            quantiles=0.5,
+            sample_weight=proximity
+            )
+        upper_bounds[idx] = upper
+        lower_bounds[idx] = lower
+        medians[idx] = median
 
-    return upper_bound, lower_bound, rf
+    return upper_bounds, medians, lower_bounds, rf
 
 
 if __name__ == "__main__":

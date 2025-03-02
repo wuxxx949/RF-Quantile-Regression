@@ -42,3 +42,24 @@ def plot_centered_bounds(y, upper_bound, lower_bound):
     plt.grid(True, color='gray', alpha=0.1)
     plt.show()
 
+
+def pred_vs_actual(actual, prediction):
+    """
+    Plot predicted vs actual values.
+
+    Parameters:
+      actual : array-like
+          The observed values.
+      prediction : array-like
+    """
+   # plot median prediction vs actual
+    min_val = min(min(prediction), min(actual))
+    max_val = max(max(prediction), max(actual))
+    plt.figure(figsize=(8, 6))
+    plt.scatter(prediction, actual, color='orange', s=15, label='Observed')
+    # add 45 degree line
+    plt.plot([min_val, max_val], [min_val, max_val], color='blue', linestyle='--')
+    plt.xlabel("Predicted Values")
+    plt.ylabel("Actual Values")
+    plt.title("Predicted vs Actual Values")
+    plt.show()
